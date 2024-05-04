@@ -1,42 +1,93 @@
-import streamlit as st
-import joblib
+import numpy as np
 import pandas as pd
-from PIL import Image
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import metrics
+import streamlit as st
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
-@st.cache(allow_output_mutation=True)
-def load(scaler_path, model_path):
-    sc = joblib.load(scaler_path)
-    model = joblib.load(model_path)
-    return sc , model
 
-def inference(row, scaler, model, feat_cols):
-    df = pd.DataFrame([row], columns = feat_cols)
-    X = scaler.transform(df)
-    features = pd.DataFrame(X, columns = feat_cols)
-    if (model.predict(features)==0):
-        return "This is a healthy person!"
-    else: return "This person has high chances of having diabetics!"
+# dataset from my Github
+df=pd.read_csv("https://raw.githubusercontent.com/gopiashokan/dataset/main/diabetes_prediction_dataset.csv")
 
-st.title('Diabetes Prediction App')
-st.write('The data for the following example is originally from the National Institute of Diabetes and Digestive and Kidney Diseases and contains information on females at least 21 years old of Pima Indian heritage. This is a sample application and cannot be used as a substitute for real medical advice.')
-image = Image.open('data/diabetes_image.jpg')
-st.image(image, use_column_width=True)
-st.write('Please fill in the details of the person under consideration in the left sidebar and click on the button below!')
 
-age =           st.sidebar.number_input("Age in Years", 1, 150, 25, 1)
-pregnancies =   st.sidebar.number_input("Number of Pregnancies", 0, 20, 0, 1)
-glucose =       st.sidebar.slider("Glucose Level", 0, 200, 25, 1)
-skinthickness = st.sidebar.slider("Skin Thickness", 0, 99, 20, 1)
-bloodpressure = st.sidebar.slider('Blood Pressure', 0, 122, 69, 1)
-insulin =       st.sidebar.slider("Insulin", 0, 846, 79, 1)
-bmi =           st.sidebar.slider("BMI", 0.0, 67.1, 31.4, 0.1)
-dpf =           st.sidebar.slider("Diabetics Pedigree Function", 0.000, 2.420, 0.471, 0.001)
+# Preprocessing using Ordinal Encoder
+enc=OrdinalEncoder()
+df["smoking_history"]=enc.fit_transform(df[["smoking_history"]])
+df["gender"]=enc.fit_transform(df[["gender"]])
 
-row = [pregnancies, glucose, bloodpressure, skinthickness, insulin, bmi, dpf, age]
 
-if (st.button('Find Health Status')):
-    feat_cols = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+# Define Independent and Dependent Variables
+x= df.drop("diabetes",axis=1)
+y=df["diabetes"]
 
-    sc, model = load('models/scaler.joblib', 'models/model.joblib')
-    result = inference(row, sc, model, feat_cols)
-    st.write(result)
+
+# 70% data - Train and 30% data - Test
+x_train , x_test , y_train, y_test = train_test_split(x,y,test_size=0.3)
+
+
+# RandomForest Algorithm
+model = RandomForestClassifier().fit(x_train,y_train)
+y_pred = model.predict(x_test)
+accuracy = metrics.accuracy_score(y_test,y_pred)
+
+
+
+st.set_page_config(page_title='DNA Sequencing Prediction', page_icon=':dna:')
+st.markdown(f'<h1 style="text-align: center;">DNA Prediction</h1>', unsafe_allow_html=True)
+
+col1, col2 = st.columns(2, gap='large')
+
+with col1:
+    gender = st.selectbox(label='Gender', options=['Male', 'Female', 'Other'])
+    gender_dict = {'Female':0.0, 'Male':1.0, 'Other':2.0}
+
+    age = st.text_input(label='Age')
+
+    hypertension = st.selectbox(label='Adenuine', options=['No', 'Yes'])
+    hypertension_dict = {'No':0, 'Yes':1}
+
+    heart_disease = st.selectbox(label='Heart Disease', options=['No', 'Yes'])
+    heart_disease_dict = {'No':0, 'Yes':1}
+
+with col2:
+    smoking_history = st.selectbox(label='DNA Abnormality History', 
+                                   options=['Never', 'Current', 'Former', 'Ever', 'Not Current', 'No Info'])
+    smoking_history_dict = {'Never':4.0, 'No Info':0.0, 'Current':1.0, 
+                            'Former':3.0, 'Ever':2.0, 'Not Current':5.0}
+
+    bmi = st.text_input(label='BMI')
+
+    hba1c_level = st.text_input(label='HbA1c Level')
+
+    blood_glucose_level = st.text_input(label='Blood Glucose Level')
+
+st.write('')
+st.write('')
+col1,col2 = st.columns([0.438,0.562])
+with col2:
+    submit = st.button(label='Submit')
+st.write('')
+
+if submit:
+    try:
+        user_data = np.array( [[ gender_dict[gender], age, hypertension_dict[hypertension], heart_disease_dict[heart_disease],
+                                smoking_history_dict[smoking_history], bmi, hba1c_level, blood_glucose_level ]] )
+
+        test_result = model.predict(user_data)
+
+        if test_result[0] == 0:
+            col1,col2,col3 = st.columns([0.33,0.30,0.35])
+            with col2:
+                st.success('DNA Result: Negative')
+            st.balloons()
+
+        else:
+            col1,col2,col3 = st.columns([0.215,0.57,0.215])
+            with col2:
+                st.error('DNA Result: Positive (Please Consult with Doctor)')
+
+    except:
+        st.warning('Please fill the all required informations')

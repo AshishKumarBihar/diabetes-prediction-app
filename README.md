@@ -1,52 +1,84 @@
-# Diabetes Prediction App [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/arunnthevapalan/diabetes-prediction-app/app.py)
-Streamlit Web App to predict the onset of diabetes based on diagnostic measures. 
+# Diabetes Prediction using Machine Learning
 
-## Data
+**Introduction**
 
-The data for the following example is originally from the [National Institute of Diabetes and Digestive and Kidney Diseases](https://www.niddk.nih.gov/) and is [available on Kaggle.](https://www.kaggle.com/uciml/pima-indians-diabetes-database) The data contains information on females at least 21 years old of Pima Indian heritage.
-Since the data has been added to the `data/` directory, cloning this repository would suffice.
-## Pre-requisites
+This Streamlit application leverages a machine learning model to predict diabetes risk based on individual medical history and demographic information. By analyzing factors such as age, gender, body mass index (BMI), hypertension, heart disease, smoking history, HbA1c level, and blood glucose level, this application assists healthcare professionals in identifying patients at risk of developing diabetes. Furthermore, it empowers researchers to explore the intricate relationships between various factors and the likelihood of diabetes occurrence.
 
-The project was developed using python 3.6.7 with the following packages.
+
+**Table of Contents**
+
+1. Key Technologies and Skills
+2. Installation
+3. Usage
+4. Features
+5. Contributing
+6. License
+7. Contact
+
+
+**Key Technologies and Skills**
+- Python
 - Pandas
 - Numpy
-- Scikit-learn
-- Pandas-profiling(renamed as ydata_profiling)
-- Joblib
+- Scikit Learn
 - Streamlit
 
-Installation with pip:
 
-```bash
-pip install -r requirements.txt
+**Installation**
+
+To run this project, you need to install the following packages:
+
+```python
+pip install pandas
+pip install numpy
+pip install scikit-learn
+pip install streamlit
 ```
 
-## Getting Started
-Open the terminal in you machine and run the following command to access the web application in your localhost.
-```bash
-streamlit run app.py
-```
 
-## Run on Docker
-Alternatively, you can build the Docker container and access the application at `localhost:8051` on your browser.
-```bash
-docker build --tag app:1.0 .
-docker run --publish 8051:8051 -it app:1.0
-```
-## Files
-- diabetes_prediction_pipeline.ipynb : Jupyter Notebook with all the workings including pre-processing, modelling and inference.
-- app.py : Streamlit App script
-- requirements.txt : pre-requiste libraries for the project
-- models/ : trained model files and scaler objects
-- data/ : source data
+**Features**
 
-## Summary
-This repository acts as a guide to [this blog post] where I talk about how I use Streamlit to build Machine Learning Applications quickly. Here we use a real-world example of predicting if a patient has diabetes and built a machine learning model. A Streamlit App was then built using a step-by-step approach in this project.
+**Dataset Source**
 
-## Acknowledgements
+The analysis is based on the "Diabetes prediction dataset" dataset sourced from Kaggle. This dataset provides a rich source of information that serves as the foundation for predicting diabetes risk.
 
-[Kaggle](https://kaggle.com/), for providing the data for the machine learning pipeline.  
-[Streamlit](https://www.streamlit.io/), for the open-source library for rapid prototyping.
+**Data Preprocessing with Ordinal Encoder**
 
+Prior to model training, the dataset undergoes a crucial preprocessing step. The ordinal encoder is applied to transform categorical variables into numerical values. This transformation ensures that the machine learning model can effectively interpret and learn from the data.
+
+**Machine Learning Model: Random Forest Algorithm**
+
+- The heart of this project lies in the utilization of the Random Forest algorithm for diabetes prediction. This powerful ensemble learning technique is well-suited for the task at hand, as it excels in handling complex datasets and making accurate predictions.
+- The model has been trained on the preprocessed data, using a combination of medical history and demographic metrics as input features.
+
+**Impressive Accuracy Score**
+
+The predictive model has demonstrated exceptional performance, boasting an accuracy score of 96.88%. This high level of accuracy ensures reliable and trustworthy predictions, making it a valuable tool for both healthcare professionals and researchers.
+
+**User-Friendly Streamlit Application**
+
+- This Streamlit application offers an intuitive and user-friendly interface. Users can effortlessly input their medical and demographic information, including gender, age, hypertension, heart diseases, smoking history, BMI, HbA1c level, and blood glucose level.
+- After providing these details, the application swiftly processes the information and generates a diabetes risk prediction based on the input data. This enables users to quickly assess their potential risk of developing diabetes.
+
+**Accessibility**
+
+- The Streamlit application is readily accessible through the following link: https://dna-classification-ml.onrender.com/
+
+- Users can conveniently access the tool in their web browsers, making it easily available for healthcare professionals and individuals concerned about diabetes risk.
+
+
+
+**Contributing**
+
+Contributions to this project are welcome! If you encounter any issues or have suggestions for improvements, please feel free to submit a pull request.
+
+
+**License**
+
+This project is licensed under the MIT License. Please review the LICENSE file for more details.
+
+
+
+For any further questions or inquiries, feel free to reach out. We are happy to assist you with any queries.
 
 
